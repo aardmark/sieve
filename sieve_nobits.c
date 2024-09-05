@@ -1,76 +1,98 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include <stdint.h>
 
-#define SIZE 1000000
+struct sieve_t {
+   int size;
+   uint8_t* bits;
+};
 
-// 4189 iterations in 5.000000 seconds - using ints
+typedef struct sieve_t Sieve;
 
-static inline void __attribute__((always_inline)) clear_multiples(uint8_t* sieve, int factor) {
-    for(int ix = factor * factor; ix < SIZE; ix+=factor * 2) {
-        sieve[ix] = 0;
+// around 8700 passes in 5.000000 seconds
+
+unsigned int usqrt(int n)
+{
+    unsigned int x;
+    unsigned int xLast;
+
+    xLast = 0;
+    x = n / 2;
+
+    while (x != xLast) {
+        xLast = x;
+        x = (x + n / x) / 2;
     }
+    return x;
 }
 
-static inline int __attribute__((always_inline)) get_next_prime(uint8_t* sieve, int factor) {
-    for(int ix = factor + 2; ix < SIZE; ix+=2) {
-        if (sieve[ix]) {
-            return ix;
+void print_results(Sieve *sieve, int passes, double elapsed_time, int show_results) {
+    if (show_results) printf("2, ");
+    int count = (sieve->size >= 2);
+
+    for(int x = 3; x < sieve->size; x+=2) {
+        if (sieve->bits[x]) {
+            count++;
+            if (show_results) printf("%d, ", x);
         }
     }
-    return 0;
+
+    if (show_results) printf("\n");
+
+    if (count != 78498) {
+        printf("INVALID number_of_primes: %d\n", count);
+    }
+    printf("%d passes in %f seconds.\n", passes, elapsed_time);
 }
 
-static inline int __attribute__((always_inline)) get_primes(int* primes) {
-    uint8_t sieve[SIZE];
-    
-    memset(sieve, 1, sizeof(sieve));
-
-    int factor = 1;
-    while (1) {
-        factor = get_next_prime(sieve, factor);
-        if (factor >= 1000) break;
-        clear_multiples(sieve, factor);
-    }
-
-    int* prime_ptr = primes;
-    *prime_ptr++ = 2;
-    int prime_count = 1;
-
-    for(int ix = 3; ix < SIZE; ix+=2)
+void calculate_primes(Sieve *sieve) {
+    int max_factor = usqrt(sieve->size);
+    int factor = 3;
+    while (factor <= max_factor)
     {
-        if (sieve[ix]) {
-            *prime_ptr++ = ix;
-            prime_count++;
+        // get next prime
+        for(int x = factor; x < sieve->size; x+=2) {
+            if (sieve->bits[x]) {
+                factor = x;
+                break;
+            }
         }
+        // clear multiples
+        for(int y = factor * factor; y < sieve->size; y+=factor * 2)
+            sieve->bits[y] = 0;
+        
+        factor += 2;
     }
-
-    return prime_count;
 }
 
 int main()
 {
-    clock_t start = clock();
-    int iterations = 0;
-    double duration = 0.0;
-    int primes[80000];
-    int prime_count;
+    struct timespec t,t2;
+    int passes = 0;
+    int max = 1000000;
+    
+    clock_gettime(CLOCK_MONOTONIC,&t);
 
     while (1)
     {
-        prime_count = get_primes(primes);
-        iterations++;
-        if (prime_count != 78498) {
-            printf("INVALID number_of_primes: %d\n", prime_count);
+        Sieve sieve;
+        sieve.size = max;
+        sieve.bits = malloc(max);
+        memset(sieve.bits, 1, max);
+        calculate_primes(&sieve);
+        passes++;
+
+        clock_gettime(CLOCK_MONOTONIC,&t2);
+        double elapsed_time=t2.tv_sec+t2.tv_nsec*1e-9-t.tv_sec-t.tv_nsec*1e-9;
+        if (elapsed_time >= 5.0) {
+            print_results(&sieve, passes, elapsed_time, 0);
+            free(sieve.bits);
             break;
         }
-        clock_t end = clock();
-        duration = (double)((end - start) / CLOCKS_PER_SEC);
-        if (duration >= 5.0) break;
+        free(sieve.bits);
     }
-
-    printf("%d iterations in %f seconds\n", iterations, duration);
 
     return 0;
 }
