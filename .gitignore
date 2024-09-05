@@ -2,4 +2,5 @@ sieve
 sieve_nobits
 sieve_odds
 sieve_stolen
+original
 *.o
