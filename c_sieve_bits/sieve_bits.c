@@ -6,13 +6,13 @@
 #define BITS 32
 
 #if BITS == 32
-typedef __uint32_t sieve_ptr_t;
+typedef uint32_t sieve_ptr_t;
 #define FILL (4294967295U)
 #define TYPE uint32_t
 #define MASK 0x1FU
 #define SHIFT 5U
 #elif BITS == 64
-typedef __uint64_t sieve_ptr_t;
+typedef uint64_t sieve_ptr_t;
 #define FILL (__UINT64_C(18446744073709551615))
 #define TYPE uint64_t
 #define MASK 0x3FUL
