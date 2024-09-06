@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -11,7 +12,7 @@ struct sieve_t {
 
 typedef struct sieve_t Sieve;
 
-// around 8700 passes in 5.000000 seconds
+// around 9100 passes in 5.000000 seconds
 
 unsigned int usqrt(int n)
 {
@@ -33,7 +34,7 @@ void print_results(Sieve *sieve, int passes, double elapsed_time, int show_resul
     int count = (sieve->size >= 2);
 
     for(int x = 3; x < sieve->size; x+=2) {
-        if (sieve->bits[x]) {
+        if (!sieve->bits[x]) {
             count++;
             if (show_results) printf("%d, ", x);
         }
@@ -54,14 +55,14 @@ void calculate_primes(Sieve *sieve) {
     {
         // get next prime
         for(int x = factor; x < sieve->size; x+=2) {
-            if (sieve->bits[x]) {
+            if (!sieve->bits[x]) {
                 factor = x;
                 break;
             }
         }
         // clear multiples
         for(int y = factor * factor; y < sieve->size; y+=factor * 2)
-            sieve->bits[y] = 0;
+            sieve->bits[y] = 1;
         
         factor += 2;
     }
@@ -79,8 +80,7 @@ int main()
     {
         Sieve sieve;
         sieve.size = max;
-        sieve.bits = malloc(max);
-        memset(sieve.bits, 1, max);
+        sieve.bits = calloc(max, sizeof(uint8_t));
         calculate_primes(&sieve);
         passes++;
 
