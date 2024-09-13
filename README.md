@@ -1,1 +1,3 @@
-for i in {1..10}; do ./sieve_nobits; done
+# Sieve
+
+Some attempts at [Primes | A Software Drag Race](https://github.com/PlummersSoftwareLLC/Primes/tree/drag-race)
