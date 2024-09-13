@@ -10,8 +10,6 @@ struct sieve_t {
 
 typedef struct sieve_t Sieve;
 
-// around 9100 passes in 5.000000 seconds
-
 unsigned int usqrt(int n)
 {
     unsigned int x;
@@ -43,7 +41,8 @@ void print_results(Sieve *sieve, int passes, double elapsed_time, int show_resul
     if (count != 78498) {
         printf("INVALID number_of_primes: %d\n", count);
     }
-    printf("%d passes in %f seconds.\n", passes, elapsed_time);
+    // <label>;<iterations>;<total_time>;<num_threads>;<tags>
+    printf("%s;%d;%f;%d;%s\n", "aardmark_c_bytes", passes, elapsed_time, 1, "");
 }
 
 void calculate_primes(Sieve *sieve) {
@@ -61,7 +60,7 @@ void calculate_primes(Sieve *sieve) {
         // clear multiples
         for(int y = factor * factor; y < sieve->size; y+=factor * 2)
             sieve->bits[y] = 1;
-        
+
         factor += 2;
     }
 }
@@ -71,7 +70,7 @@ int main()
     struct timespec t,t2;
     int passes = 0;
     int max = 1000000;
-    
+
     clock_gettime(CLOCK_MONOTONIC,&t);
 
     while (1)

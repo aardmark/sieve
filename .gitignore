@@ -1,7 +1,4 @@
 sieve_bits
-sieve_nobits
-sieve_odds
-sieve_stolen
-original
-tmux*
+sieve_bytes
+sieve_odd_bits
 *.o

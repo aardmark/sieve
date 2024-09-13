@@ -60,7 +60,8 @@ void print_results(Sieve *sieve, unsigned int passes, double elapsed_time, int s
     if (count != 78498) {
         printf("INVALID number_of_primes: %d\n", count);
     }
-    printf("%d passes in %f seconds.\n", passes, elapsed_time);
+    // <label>;<iterations>;<total_time>;<num_threads>;<tags>
+    printf("%s;%d;%f;%d;%s\n", "aardmark_c_odd_bits", passes, elapsed_time, 1, "");
 }
 
 void calculate_primes(Sieve *sieve) {
@@ -114,33 +115,3 @@ int main()
     return 0;
 }
 
-// 999931,999953,999959,999961,999979,999983
-
-// for i in {1..10}; do ./sieve_odds; done
-
-/*
-64bit
-11415 passes in 5.000351 seconds.
-11403 passes in 5.000010 seconds.
-11360 passes in 5.000165 seconds.
-11365 passes in 5.000328 seconds.
-11416 passes in 5.000027 seconds.
-11416 passes in 5.000351 seconds.
-11342 passes in 5.000190 seconds.
-11088 passes in 5.000357 seconds.
-11414 passes in 5.000292 seconds.
-10744 passes in 5.000172 seconds.
-
-32bit
-12852 passes in 5.000299 seconds.
-12762 passes in 5.000071 seconds.
-12763 passes in 5.000114 seconds.
-12797 passes in 5.000291 seconds.
-12817 passes in 5.000233 seconds.
-12838 passes in 5.000266 seconds.
-12833 passes in 5.000348 seconds.
-12752 passes in 5.000022 seconds.
-12755 passes in 5.000215 seconds.
-12750 passes in 5.000128 seconds.
-
-*/

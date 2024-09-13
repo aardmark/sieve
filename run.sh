@@ -1,5 +1,4 @@
 #!/bin/sh
-for x in sieve_nobits sieve_bits sieve_odds; do
-    echo $x
+for x in sieve_bytes sieve_bits sieve_odd_bits; do
     ./$x
 done
